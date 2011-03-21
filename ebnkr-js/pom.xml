@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.gratiartis.t1</groupId>
+  <artifactId>t1-web</artifactId>
+  <packaging>war</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>t1-web Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.8.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+                  <groupId>org.mortbay.jetty</groupId>
+                  <artifactId>jetty-maven-plugin</artifactId>
+            <version>7.2.2.v20101205</version>
+      </dependency>
+  </dependencies>
+  <build>
+    <finalName>t1-web</finalName>
+    <plugins>
+    
+          <plugin>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty-maven-plugin</artifactId>
+            <version>7.2.2.v20101205</version>
+            <configuration>
+              <useTestClasspath>true</useTestClasspath>
+              <!--
+                <overrideWebXml>${basedir}/src/test/webapp/WEB-INF/web.xml</overrideWebXml>
+              -->
+              <scanIntervalSeconds>10</scanIntervalSeconds>
+              <stopKey>foo</stopKey>
+              <stopPort>9999</stopPort>
+              <webAppConfig>
+                <defaultsDescriptor>src/test/resources/webdefault.xml</defaultsDescriptor>
+              </webAppConfig>
+            </configuration>
+            <executions>
+                    <execution>
+                            <id>start-jetty</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                    <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                    <scanIntervalSeconds>0</scanIntervalSeconds>
+                                    <daemon>true</daemon>
+                            </configuration>
+                    </execution>
+                    <execution>
+                            <id>stop-jetty</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                    <goal>stop</goal>
+                            </goals>
+                    </execution>
+            </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
