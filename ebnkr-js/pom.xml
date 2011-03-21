@@ -36,9 +36,6 @@
               <scanIntervalSeconds>10</scanIntervalSeconds>
               <stopKey>foo</stopKey>
               <stopPort>9999</stopPort>
-              <webAppConfig>
-                <defaultsDescriptor>src/test/resources/webdefault.xml</defaultsDescriptor>
-              </webAppConfig>
             </configuration>
             <executions>
                     <execution>
