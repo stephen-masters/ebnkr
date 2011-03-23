@@ -1,1 +1,40 @@
 A library of JavaScript utilities that may be useful in banking.
+
+For the moment this is more of an experiment for me in evaluating the capabilities of JavaScript unit test and Behaviour-Driven Development (BDD) frameworks, and seeing how well I can integrate them into my builds.
+
+Currently testing with...
+
+Jasmine BDD for JavaScript: http://pivotal.github.com/jasmine/
+    This is a reasonably lightweight behaviour-driven development framework produced by the nice folks at Pivotal Labs. The syntax is quite similar to that of RSpec.
+    To run the Jasmine tests, open the following page in your browser:
+        src/test/javascript/jasmine-standalone-1.0.2/SpecRunner.html
+
+Please get in touch if you know of an alternative test framework that I could try out.
+
+
+If you are familiar with Maven, you will recognise the project structure:
+
+    src/
+        pom.xml
+        main/ ----> The directory under which 'release' code should go.
+            webapp/
+                index.jsp ----> Default home page for the test web app.
+                js/
+                    ebnkr-js/
+                        ebnkr.js
+                WEB-INF/
+                    web.xml
+        test/ ----> The directory where all test (i.e. unit tests) code should go.
+            javascript/
+                jasmine-standalone-1.0.2/ ----> The Jasmine BDD test framework for JavaScript.
+                    lib/
+                        jasmine-1.0.2
+                    spec/ ----> Jasmine test specifications go in here.
+                        ebnkr.Spec.js
+                    SpecRunner.html ----> Launch this in your browser to run Jasmine tests.
+
+To take full advantage going forward, you should install Maven (http://maven.apache.org/).
+With Maven installed, you can open a shell on the ebnkr-js (the one with pom.xml in it) directory and run:
+    mvn jetty:run
+That will run up a Jetty web server running the test web application. The test application is somewhat limited at the moment, but I intend to use this to enable build-time testing using Selenium or some other such regression testing tool.
+
