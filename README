@@ -4,7 +4,7 @@ For the moment this is more of an experiment for me in evaluating the capabiliti
 
 Currently testing with...
 
-Jasmine BDD for JavaScript: http://pivotal.github.com/jasmine/
+Jasmine BDD for JavaScript: https://jasmine.github.io/
     This is a reasonably lightweight behaviour-driven development framework produced by the nice folks at Pivotal Labs. The syntax is quite similar to that of RSpec.
     To run the Jasmine tests, open the following page in your browser:
         src/test/javascript/jasmine-standalone-1.0.2/SpecRunner.html
