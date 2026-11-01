@@ -49,6 +49,12 @@ state what ISO 7064 MOD 97-10 guarantees, with the arithmetic in comments.
 checksum, for checking the library against. Don't make it share code with
 `src/`. Don't weaken an assertion to make a change pass.
 
+### TypeScript stays below 6.1 for now
+
+`typescript-eslint` 8 supports TypeScript only below 6.1, so `package.json`
+pins `~6.0` and Dependabot ignores major TypeScript updates. Lift both
+together once `npm view typescript-eslint peerDependencies` includes 7.
+
 ## Layout
 
 | Path | What |

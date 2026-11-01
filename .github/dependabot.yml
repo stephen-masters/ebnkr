@@ -11,6 +11,12 @@ updates:
     groups:
       npm:
         update-types: ["minor", "patch"]
+    ignore:
+      # typescript-eslint 8 supports TypeScript only below 6.1, so TypeScript
+      # 7 breaks `npm ci`. Remove this once typescript-eslint's peer range
+      # includes 7: check with `npm view typescript-eslint peerDependencies`.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "build"
       include: "scope"
