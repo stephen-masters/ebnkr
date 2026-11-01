@@ -1,0 +1,32 @@
+# Lefthook — git hooks manager. Installed by the "prepare" npm script
+# (lefthook install) when you run `npm install`.
+#
+# pre-commit lints the staged files only (fast); pre-push runs everything CI
+# runs except the scanners. commit-msg enforces Conventional Commits with the
+# shared script in .githooks/.
+
+pre-commit:
+  parallel: true
+  commands:
+    eslint:
+      glob: "*.{ts,js,mjs}"
+      run: npx eslint {staged_files}
+    markdownlint:
+      glob: "*.md"
+      exclude:
+        - CLAUDE.md
+      run: npx markdownlint-cli2 {staged_files}
+    # The registry is generated: a hand edit would drift from its source.
+    registry:
+      glob: "src/registry.ts"
+      run: node scripts/build-registry.mjs && git diff --exit-code src/registry.ts
+
+pre-push:
+  commands:
+    check:
+      run: npm run check
+
+commit-msg:
+  commands:
+    conventional:
+      run: .githooks/commit-msg {1}
