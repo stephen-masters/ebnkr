@@ -1,0 +1,10 @@
+globs:
+  - "**/*.md"
+ignores:
+  - node_modules
+  - dist
+  - CLAUDE.md
+
+config:
+  MD013: false
+  MD060: false

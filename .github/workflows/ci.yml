@@ -1,0 +1,121 @@
+# Lint, type-check, test, build and scan on every push to main and every pull
+# request.
+#
+# The tests run on every supported Node LTS line. `npm run test:coverage`
+# fails below 100% line, branch and function coverage, and `npm run smoke`
+# imports the built dist/ through the package's own "exports" map, so a file
+# that works from src/ but is missing from the build fails here.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24, 26]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:coverage
+      - run: npm run build
+      - run: npm run smoke
+
+  # The registry is generated from a pinned, checksummed source: regenerating
+  # it must give exactly the committed file.
+  registry:
+    name: Registry is current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: node scripts/build-registry.mjs
+      - run: git diff --exit-code src/registry.ts
+
+  # The package has no runtime dependencies, so a production audit must be
+  # empty. The development tooling is held to HIGH and above.
+  audit:
+    name: npm audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: npm audit --omit=dev --audit-level=low
+      - run: npm audit --audit-level=high
+
+  # Same arrangement as the sibling repositories. package-lock.json carries
+  # every resolved version, so a filesystem scan sees the whole tree.
+  trivy:
+    name: Trivy scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Scan for vulnerabilities
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: library
+          severity: HIGH,CRITICAL
+
+      - name: Generate SBOM
+        uses: aquasecurity/trivy-action@v0.36.0
+        if: always()
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: cyclonedx
+          output: sbom.cdx.json
+          exit-code: '0'
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: sbom-source-tree
+          path: sbom.cdx.json
+          retention-days: 90
+
+  # .githooks/commit-msg is a copy of the shared template in
+  # scattercode/release-pipelines. Git runs hooks from the checkout, so it has
+  # to be a real file here; this stops the copy drifting unnoticed. The
+  # project has no automated releases, so it carries no cliff.toml, which the
+  # check skips.
+  templates:
+    name: Shared templates are current
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check out the shared templates
+        uses: actions/checkout@v7
+        with:
+          repository: scattercode/release-pipelines
+          ref: v1
+          path: .release-pipelines
+
+      - name: Compare
+        run: ./.release-pipelines/sync.sh --check .
